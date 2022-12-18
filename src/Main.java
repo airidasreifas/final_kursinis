@@ -4,23 +4,23 @@ import java.awt.event.*;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-public class main extends Frame implements ActionListener {
-	public static final int Fram_width = 800; 
+public class Main extends Frame implements ActionListener {
+	public static final int Fram_width = 800;
 	public static final int Fram_length = 600;
-	public static boolean printable = true;
-	MenuBar cmb = null;
-	Menu cm1 = null, cm2 = null;
-	MenuItem cmi1 = null, cmi2 = null, cmi3 = null;
-	Image screenImage = null;
-	tank myTank = new tank(300, 560, true, Direction.STOP, this,1);
-	home home = new home(373, 557, this);
-	Boolean win=false,lose=false;
-	List<tank> tanks = new ArrayList<tank>();
-	List<tankBoom> tankBooms = new ArrayList<tankBoom>();
-	List<bullets> bullets = new ArrayList<bullets>();
-	List<commonWall> homeWall = new ArrayList<commonWall>();
-	List<commonWall> otherWall = new ArrayList<commonWall>();
-	List<metalWall> metalWall = new ArrayList<metalWall>();
+	private static boolean printable = true;
+	private MenuBar cmb = null;
+	private Menu cm1 = null, cm2 = null;
+	private MenuItem cmi1 = null, cmi2 = null, cmi3 = null;
+	private Image screenImage = null;
+	Tank myTank = new Tank(300, 560, true, Direction.STOP, this,1);
+	Home home = Home.getInstance(this);
+	private Boolean win=false,lose=false;
+	List<Tank> Tanks = new ArrayList<Tank>();
+	List<TankBoom> tankBooms = new ArrayList<TankBoom>();
+	List<Bullets> bullets = new ArrayList<Bullets>();
+	List<CommonWall> homeWall = new ArrayList<CommonWall>();
+	List<CommonWall> otherWall = new ArrayList<CommonWall>();
+	List<MetalWall> metalWall = new ArrayList<MetalWall>();
 
 	public void update(Graphics g) {
 
@@ -42,16 +42,16 @@ public class main extends Frame implements ActionListener {
 
 		Font f1 = g.getFont();
 		g.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		g.drawString("tanks Remaining: ", 50, 70);
+		g.drawString("Tanks Remaining: ", 50, 70);
 		g.setFont(new Font("Times New Roman", Font.BOLD, 30));
-		g.drawString("" + tanks.size(), 210, 70);
+		g.drawString("" + Tanks.size(), 210, 70);
 		g.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		g.drawString("Health: ", 580, 70);
 		g.setFont(new Font("Times New Roman", Font.BOLD, 30));
 		g.drawString("" + myTank.getLife(), 650, 70);
 		g.setFont(f1);
 
-			if (tanks.size() == 0 && home.isLive() && myTank.isLive()&&lose==false) {
+			if (Tanks.size() == 0 && home.isLive() && myTank.isLive()&&lose==false) {
 			Font f = g.getFont();
 			g.setFont(new Font("Times New Roman", Font.BOLD, 60)); 
 			this.otherWall.clear();
@@ -65,7 +65,7 @@ public class main extends Frame implements ActionListener {
 		if (myTank.isLive() == false&&win==false) {
 			Font f = g.getFont();
 			g.setFont(new Font("Times New Roman", Font.BOLD, 40));
-			tanks.clear();
+			Tanks.clear();
 			bullets.clear();
 			homeWall.clear();
 			this.otherWall.clear();
@@ -81,49 +81,49 @@ public class main extends Frame implements ActionListener {
 		myTank.draw(g);
 		
 		for (int i = 0; i < bullets.size(); i++) { 
-			bullets m = bullets.get(i);
-			m.hitTanks(tanks);
+			Bullets m = bullets.get(i);
+			m.hitTanks(Tanks);
 			m.hitTank(myTank);
 			m.hitHome(); 
 			for(int j=0;j<bullets.size();j++){
 				if (i==j) continue;
-				bullets bts=bullets.get(j);
+				Bullets bts=bullets.get(j);
 				m.hitBullet(bts);
 			}
 			for (int j = 0; j < metalWall.size(); j++) { 
-				metalWall mw = metalWall.get(j);
+				MetalWall mw = metalWall.get(j);
 				m.hitWall(mw);
 			}
 			for (int j = 0; j < otherWall.size(); j++) {
-				commonWall w = otherWall.get(j);
+				CommonWall w = otherWall.get(j);
 				m.hitWall(w);
 			}
 			for (int j = 0; j < homeWall.size(); j++) {
-				commonWall cw = homeWall.get(j);
+				CommonWall cw = homeWall.get(j);
 				m.hitWall(cw);
 			}
 			m.draw(g); 
 		}
 
-		for (int i = 0; i < tanks.size(); i++) {
-			tank t = tanks.get(i);
+		for (int i = 0; i < Tanks.size(); i++) {
+			Tank t = Tanks.get(i);
 
 			for (int j = 0; j < homeWall.size(); j++) {
-				commonWall cw = homeWall.get(j);
+				CommonWall cw = homeWall.get(j);
 				t.collideWithWall(cw);
 				cw.draw(g);
 			}
 			for (int j = 0; j < otherWall.size(); j++) {
-				commonWall cw = otherWall.get(j);
+				CommonWall cw = otherWall.get(j);
 				t.collideWithWall(cw);
 				cw.draw(g);
 			}
 			for (int j = 0; j < metalWall.size(); j++) {
-				metalWall mw = metalWall.get(j);
+				MetalWall mw = metalWall.get(j);
 				t.collideWithWall(mw);
 				mw.draw(g);
 			}
-			t.collideWithTanks(tanks);
+			t.collideWithTanks(Tanks);
 			t.collideHome(home);
 
 			t.draw(g);
@@ -131,36 +131,36 @@ public class main extends Frame implements ActionListener {
 
 
 		for (int i = 0; i < tankBooms.size(); i++) {
-			tankBoom bt = tankBooms.get(i);
+			TankBoom bt = tankBooms.get(i);
 			bt.draw(g);
 		}
 		for (int i = 0; i < otherWall.size(); i++) {
-			commonWall cw = otherWall.get(i);
+			CommonWall cw = otherWall.get(i);
 			cw.draw(g);
 		}
 		for (int i = 0; i < metalWall.size(); i++) {
-			metalWall mw = metalWall.get(i);
+			MetalWall mw = metalWall.get(i);
 			mw.draw(g);
 		}
 
-		myTank.collideWithTanks(tanks);
+		myTank.collideWithTanks(Tanks);
 		myTank.collideHome(home);
 
 		for (int i = 0; i < metalWall.size(); i++) {
-			metalWall w = metalWall.get(i);
+			MetalWall w = metalWall.get(i);
 			myTank.collideWithWall(w);
 		}
 		for (int i = 0; i < otherWall.size(); i++) {
-			commonWall cw = otherWall.get(i);
+			CommonWall cw = otherWall.get(i);
 			myTank.collideWithWall(cw);
 		}
 		for (int i = 0; i < homeWall.size(); i++) {
-			commonWall w = homeWall.get(i);
+			CommonWall w = homeWall.get(i);
 			myTank.collideWithWall(w);
 		}
 	}
 
-	public main() {
+	public Main() {
 		cmb = new MenuBar();
 
 		cm1 = new Menu("Game");
@@ -199,37 +199,37 @@ public class main extends Frame implements ActionListener {
 
 		for (int i = 0; i < 10; i++) {
 			if (i < 4)
-				homeWall.add(new commonWall(350, 580 - 21 * i, this));
+				homeWall.add(new CommonWall(350, 580 - 21 * i, this));
 			else if (i < 7)
-				homeWall.add(new commonWall(372 + 22 * (i - 4), 517, this));
+				homeWall.add(new CommonWall(372 + 22 * (i - 4), 517, this));
 			else
-				homeWall.add(new commonWall(416, 538 + (i - 7) * 21, this));
+				homeWall.add(new CommonWall(416, 538 + (i - 7) * 21, this));
 		}
 
 		for (int i = 0; i < 32; i++) {
 			if (i < 16) {
-				otherWall.add(new commonWall(75 + 21 * i, 300, this));
-				otherWall.add(new commonWall(350+ 21 * i, 300, this));
-				otherWall.add(new commonWall(500 + 21 * i, 180, this));
-				otherWall.add(new commonWall(200, 400 + 21 * i, this));
-				otherWall.add(new commonWall(500, 400 + 21 * i, this));
+				otherWall.add(new CommonWall(75 + 21 * i, 300, this));
+				otherWall.add(new CommonWall(350+ 21 * i, 300, this));
+				otherWall.add(new CommonWall(500 + 21 * i, 180, this));
+				otherWall.add(new CommonWall(200, 400 + 21 * i, this));
+				otherWall.add(new CommonWall(500, 400 + 21 * i, this));
 			} else if (i < 32) {
-				otherWall.add(new commonWall(75 + 21 * (i - 16), 320, this));
-				otherWall.add(new commonWall(350 + 21 * (i - 16), 320, this));
-				otherWall.add(new commonWall(500 + 21 * (i - 16), 200, this));
-				otherWall.add(new commonWall(222, 400 + 21 * (i - 16), this));
-				otherWall.add(new commonWall(522, 400 + 21 * (i - 16), this));
+				otherWall.add(new CommonWall(75 + 21 * (i - 16), 320, this));
+				otherWall.add(new CommonWall(350 + 21 * (i - 16), 320, this));
+				otherWall.add(new CommonWall(500 + 21 * (i - 16), 200, this));
+				otherWall.add(new CommonWall(222, 400 + 21 * (i - 16), this));
+				otherWall.add(new CommonWall(522, 400 + 21 * (i - 16), this));
 			}
 		}
 
 		for (int i = 0; i < 10; i++) {
 			if (i < 5) {
-				metalWall.add(new metalWall(295 + 30 * i, 400, this));
+				metalWall.add(new MetalWall(295 + 30 * i, 400, this));
 			} else if (i < 10)
-				metalWall.add(new metalWall(600, 300 + 20 * (i), this));
+				metalWall.add(new MetalWall(600, 300 + 20 * (i), this));
 
-				metalWall.add(new metalWall(100, 460 + 20 * (i), this));
-				metalWall.add(new metalWall(380 + 30 * (i - 10), 180, this));
+				metalWall.add(new MetalWall(100, 460 + 20 * (i), this));
+				metalWall.add(new MetalWall(380 + 30 * (i - 10), 180, this));
 
 			
 		}
@@ -237,11 +237,11 @@ public class main extends Frame implements ActionListener {
 
 		for (int i = 0; i < 20; i++) {
 			if (i < 9) 
-				tanks.add(new tank(150 + 70 * i, 40, false, Direction.D, this,0));
+				Tanks.add(new Tank(150 + 70 * i, 40, false, Direction.D, this,0));
 			else if (i < 15)
-				tanks.add(new tank(700, 140 + 50 * (i - 6), false, Direction.D, this,0));
+				Tanks.add(new Tank(700, 140 + 50 * (i - 6), false, Direction.D, this,0));
 			else
-				tanks.add(new tank(10, 50 * (i - 12), false, Direction.D, this,0));
+				Tanks.add(new Tank(10, 50 * (i - 12), false, Direction.D, this,0));
 		}
 
 		this.setSize(Fram_width, Fram_length);
@@ -262,12 +262,11 @@ public class main extends Frame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		new main();
+		new Main();
 	}
 
 	private class PaintThread implements Runnable {
 		public void run() {
-			// TODO Auto-generated method stub
 			while (printable) {
 				repaint();
 				try {
@@ -293,7 +292,7 @@ public class main extends Frame implements ActionListener {
 		if (e.getActionCommand().equals("NewGame")) {
 				printable = true;
 				this.dispose();
-				new main();
+				new Main();
 
 		} else if (e.getActionCommand().equals("Exit")) {
 			printable = false;

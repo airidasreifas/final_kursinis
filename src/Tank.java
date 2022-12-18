@@ -3,16 +3,14 @@ import java.awt.event.*;
 import java.util.*;
 
 
-public class tank {
-	public static  int speedX = 6, speedY =6; 
-	public static int count = 0;
-	public static final int width = 35, length = 35;
+public class Tank extends Object{
+	private static  int speedX = 6, speedY =6;
+	private static int count = 0;
+	private static final int width = 35, length = 35;
 	private Direction direction = Direction.STOP;
 	private Direction kdirection = Direction.U;
-	main tc;
 	private int player=0;
 	private boolean good;
-	private int x, y;
 	private int oldX, oldY;
 	private boolean live = true;
 	private int life = 200;
@@ -21,43 +19,36 @@ public class tank {
 	private int step = r.nextInt(10)+5 ; 
 
 	private boolean bL = false, bU = false, bR = false, bD = false;
-	
-
-	private static Toolkit tk = Toolkit.getDefaultToolkit();
 	private static Image[] tankImags = null; 
 	static {
 		tankImags = new Image[] {
-				tk.getImage(tankBoom.class.getResource("Images/enemyTankDown.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/enemyTankUp.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/enemyTankLeft.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/enemyTankRight.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/myTankDown.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/myTankUp.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/myTankLeft.gif")),
-				tk.getImage(tankBoom.class.getResource("Images/myTankRight.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/enemyTankDown.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/enemyTankUp.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/enemyTankLeft.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/enemyTankRight.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/myTankDown.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/myTankUp.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/myTankLeft.gif")),
+				tk.getImage(TankBoom.class.getResource("Images/myTankRight.gif")),
 				};
 
 	}
 
-	public tank(int x, int y, boolean good) {
+	public Tank(int x, int y, boolean good, Direction dir, Main main, int player) {
 		this.x = x;
 		this.y = y;
 		this.oldX = x;
 		this.oldY = y;
 		this.good = good;
-	}
-
-	public tank(int x, int y, boolean good, Direction dir, main tc, int player) {
-		this(x, y, good);
 		this.direction = dir;
-		this.tc = tc;
+		this.main = main;
 		this.player=player;
 	}
 
 	public void draw(Graphics g) {
 		if (!live) {
 			if (!good) {
-				tc.tanks.remove(this);
+				main.Tanks.remove(this);
 			}
 			return;
 		}
@@ -123,10 +114,10 @@ public class tank {
 			x = 0;
 		if (y < 40)     
 			y = 40;
-		if (x + tank.width > main.Fram_width)
-			x = main.Fram_width - tank.width;
-		if (y + tank.length > main.Fram_length)
-			y = main.Fram_length - tank.length;
+		if (x + Tank.width > Main.Fram_width)
+			x = Main.Fram_width - Tank.width;
+		if (y + Tank.length > Main.Fram_length)
+			y = Main.Fram_length - Tank.length;
 
 		if (!good) {
 			Direction[] directons = direction.values();
@@ -134,10 +125,10 @@ public class tank {
 				step = r.nextInt(12) + 3;  
 				int mod=r.nextInt(9);
 				if (playertankaround()){
-					if(x==tc.myTank.x){ if(y>tc.myTank.y) direction=directons[1];
-					else if (y<tc.myTank.y) direction=directons[3];
-					}else if(y==tc.myTank.y){ if(x>tc.myTank.x) direction=directons[0];
-					else if (x<tc.myTank.x) direction=directons[2];
+					if(x== main.myTank.x){ if(y> main.myTank.y) direction=directons[1];
+					else if (y< main.myTank.y) direction=directons[3];
+					}else if(y== main.myTank.y){ if(x> main.myTank.x) direction=directons[0];
+					else if (x< main.myTank.x) direction=directons[2];
 					}
 					else{
 						int rn = r.nextInt(directons.length);
@@ -166,7 +157,7 @@ public class tank {
 		if((x-15)<0) rx=0;
 		if((y-15)<0)ry=0;
 		Rectangle a=new Rectangle(rx, ry,60,60);
-		if (this.live && a.intersects(tc.myTank.getRect())) {
+		if (this.live && a.intersects(main.myTank.getRect())) {
 		return true;	
 		}
 		return false;	
@@ -181,30 +172,30 @@ public class tank {
 		int key = e.getKeyCode();
 		switch (key) {
 		case KeyEvent.VK_R:  
-			tc.tanks.clear();
-			tc.bullets.clear();
-			tc.otherWall.clear();
-			tc.homeWall.clear();
-			tc.metalWall.clear();
-			tc.myTank.setLive(false);
-			if (tc.tanks.size() == 0) {
+			main.Tanks.clear();
+			main.bullets.clear();
+			main.otherWall.clear();
+			main.homeWall.clear();
+			main.metalWall.clear();
+			main.myTank.setLive(false);
+			if (main.Tanks.size() == 0) {
 				for (int i = 0; i < 20; i++) {
 					if (i < 9)                             
-						tc.tanks.add(new tank(150 + 70 * i, 40, false,
-								direction.R, tc,0));
+						main.Tanks.add(new Tank(150 + 70 * i, 40, false,
+								direction.R, main,0));
 					else if (i < 15)
-						tc.tanks.add(new tank(700, 140 + 50 * (i -6), false,
-								direction.D, tc,0));
+						main.Tanks.add(new Tank(700, 140 + 50 * (i -6), false,
+								direction.D, main,0));
 					else
-						tc.tanks.add(new tank(10,  50 * (i - 12), false,
-								direction.L, tc,0));
+						main.Tanks.add(new Tank(10,  50 * (i - 12), false,
+								direction.L, main,0));
 				}
 			}
 			
-			tc.myTank = new tank(300, 560, true, direction.STOP, tc,0);
-			if (!tc.home.isLive()) 
-				tc.home.setLive(true);
-			main abc=new main();
+			main.myTank = new Tank(300, 560, true, direction.STOP, main,0);
+			if (!main.home.isLive())
+				main.home.setLive(true);
+			Main abc=new Main();
 		case KeyEvent.VK_D:
 			bR = true;
 			break;
@@ -267,13 +258,13 @@ public class tank {
 		decideDirection(); 
 	}
 
-	public bullets fire() {
+	public Bullets fire() {
 		if (!live)
 			return null;
-		int x = this.x + tank.width / 2 - bullets.width / 2;
-		int y = this.y + tank.length / 2 - bullets.length / 2;
-		bullets m = new bullets(x, y + 2, good, kdirection, this.tc);
-		tc.bullets.add(m);                                                
+		int x = this.x + Tank.width / 2 - Bullets.width / 2;
+		int y = this.y + Tank.length / 2 - Bullets.length / 2;
+		Bullets m = new Bullets(x, y + 2, good, kdirection, this.main);
+		main.bullets.add(m);
 		return m;
 	}
 
@@ -291,7 +282,7 @@ public class tank {
 		return good;
 	}
 
-	public boolean collideWithWall(commonWall w) {
+	public boolean collideWithWall(CommonWall w) {
 		if (this.live && this.getRect().intersects(w.getRect())) {
 			 this.changToOldDir();    
 			return true;
@@ -299,7 +290,7 @@ public class tank {
 		return false;
 	}
 
-	public boolean collideWithWall(metalWall w) {
+	public boolean collideWithWall(MetalWall w) {
 		if (this.live && this.getRect().intersects(w.getRect())) {
 			this.changToOldDir();     
 			return true;
@@ -307,7 +298,7 @@ public class tank {
 		return false;
 	}
 
-	public boolean collideHome(home h) {
+	public boolean collideHome(Home h) {
 		if (this.live && this.getRect().intersects(h.getRect())) {
 			this.changToOldDir();
 			return true;
@@ -315,9 +306,9 @@ public class tank {
 		return false;
 	}
 
-	public boolean collideWithTanks(java.util.List<tank> tanks) {
-		for (int i = 0; i < tanks.size(); i++) {
-			tank t = tanks.get(i);
+	public boolean collideWithTanks(java.util.List<Tank> Tanks) {
+		for (int i = 0; i < Tanks.size(); i++) {
+			Tank t = Tanks.get(i);
 			if (this != t) {
 				if (this.live && t.isLive()
 						&& this.getRect().intersects(t.getRect())) {

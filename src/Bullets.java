@@ -3,34 +3,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class bullets {
-	public static  int speedX = 12;
-	public static  int speedY = 12;
+public class Bullets extends Object{
+	private static  int speedX = 12;
+	private static  int speedY = 12;
 	public static final int width = 10;
 	public static final int length = 10;
-
-	private int x, y;
-	Direction diretion;
-
+	private Direction direction;
 	private boolean good;
 	private boolean live = true;
-	private main tc;
-
-	private static Toolkit tk = Toolkit.getDefaultToolkit();
 	private static Image[] bulletImages = null;
 	private static Map<String, Image> imgs = new HashMap<String, Image>(); 
 	static {
 		bulletImages = new Image[] {
-				tk.getImage(bullets.class.getClassLoader().getResource(
+				tk.getImage(Bullets.class.getClassLoader().getResource(
 						"images/bulletLeft.gif")),
 
-				tk.getImage(bullets.class.getClassLoader().getResource(
+				tk.getImage(Bullets.class.getClassLoader().getResource(
 						"images/bulletUp.gif")),
 
-				tk.getImage(bullets.class.getClassLoader().getResource(
+				tk.getImage(Bullets.class.getClassLoader().getResource(
 						"images/bulletRight.gif")),
 
-				tk.getImage(bullets.class.getClassLoader().getResource(
+				tk.getImage(Bullets.class.getClassLoader().getResource(
 						"images/bulletDown.gif")),
 
 		};
@@ -45,21 +39,21 @@ public class bullets {
 
 	}
 
-	public bullets(int x, int y, Direction dir) {
+	public Bullets(int x, int y, Direction dir) {
 		this.x = x;
 		this.y = y;
-		this.diretion = dir;
+		this.direction = dir;
 	}
 
-	public bullets(int x, int y, boolean good, Direction dir, main tc) {
+	public Bullets(int x, int y, boolean good, Direction dir, Main main) {
 		this(x, y, dir);
 		this.good = good;
-		this.tc = tc;
+		this.main = main;
 	}
 
-	private void move() {
+	public void move() {
 
-		switch (diretion) {
+		switch (direction) {
 		case L:
 			x -= speedX;
 			break;
@@ -80,19 +74,19 @@ public class bullets {
 			break;
 		}
 
-		if (x < 0 || y < 0 || x > main.Fram_width
-				|| y > main.Fram_length) {
+		if (x < 0 || y < 0 || x > Main.Fram_width
+				|| y > Main.Fram_length) {
 			live = false;
 		}
 	}
 
 	public void draw(Graphics g) {
 		if (!live) {
-			tc.bullets.remove(this);
+			main.bullets.remove(this);
 			return;
 		}
 
-		switch (diretion) { 
+		switch (direction) {
 		case L:
 			g.drawImage(imgs.get("L"), x, y, null);
 			break;
@@ -122,22 +116,22 @@ public class bullets {
 		return new Rectangle(x, y, width, length);
 	}
 
-	public boolean hitTanks(List<tank> tanks) {
-		for (int i = 0; i < tanks.size(); i++) {
-			if (hitTank(tanks.get(i))) {
+	public boolean hitTanks(List<Tank> Tanks) {
+		for (int i = 0; i < Tanks.size(); i++) {
+			if (hitTank(Tanks.get(i))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean hitTank(tank t) {
+	public boolean hitTank(Tank t) {
 
 		if (this.live && this.getRect().intersects(t.getRect()) && t.isLive()
 				&& this.good != t.isGood()) {
 
-			tankBoom e = new tankBoom(t.getX(), t.getY(), tc);
-			tc.tankBooms.add(e);
+			TankBoom e = new TankBoom(t.getX(), t.getY(), main);
+			main.tankBooms.add(e);
 			if (t.isGood()) {
 				t.setLife(t.getLife() - 50); 
 				if (t.getLife() <= 0)
@@ -153,24 +147,24 @@ public class bullets {
 		return false;
 	}
 
-	public boolean hitWall(commonWall w) {
+	public boolean hitWall(CommonWall w) {
 		if (this.live && this.getRect().intersects(w.getRect())) {
 			this.live = false;
-			this.tc.otherWall.remove(w); 
-			this.tc.homeWall.remove(w);
+			this.main.otherWall.remove(w);
+			this.main.homeWall.remove(w);
 			return true;
 		}
 		return false;
 	}
-	public boolean hitBullet(bullets w){
+	public boolean hitBullet(Bullets w){
 		if (this.live && this.getRect().intersects(w.getRect())){
 			this.live=false;
-			this.tc.bullets.remove(w);
+			this.main.bullets.remove(w);
 			return true;
 		}
 		return false;
 	}
-	public boolean hitWall(metalWall w) {
+	public boolean hitWall(MetalWall w) {
 		if (this.live && this.getRect().intersects(w.getRect())) {
 			this.live = false;
 			return true;
@@ -179,12 +173,14 @@ public class bullets {
 	}
 
 	public boolean hitHome() { 
-		if (this.live && this.getRect().intersects(tc.home.getRect())) {
+		if (this.live && this.getRect().intersects(main.home.getRect())) {
 			this.live = false;
-			this.tc.home.setLive(false); 
+			this.main.home.setLive(false);
 			return true;
 		}
 		return false;
 	}
+
+
 
 }

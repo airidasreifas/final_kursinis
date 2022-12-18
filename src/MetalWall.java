@@ -3,22 +3,19 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
-public class metalWall {
-	public static final int width = 36; 
-	public static final int length = 37;
-	private int x, y;
-	main tc;
-	private static Toolkit tk = Toolkit.getDefaultToolkit();
+public class MetalWall extends Object{
+	private static final int width = 36;
+	private static final int length = 37;
 	private static Image[] wallImags = null;
 	static {
-		wallImags = new Image[] { tk.getImage(commonWall.class
+		wallImags = new Image[] { tk.getImage(CommonWall.class
 				.getResource("Images/metalWall.gif")), };
 	}
 
-	public metalWall(int x, int y, main tc) {
+	public MetalWall(int x, int y, Main main) {
 		this.x = x;
 		this.y = y;
-		this.tc = tc;
+		this.main = main;
 	}
 
 	public void draw(Graphics g) { 

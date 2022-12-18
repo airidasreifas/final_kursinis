@@ -5,34 +5,27 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
-public class home {
-	private int x, y;
-	private main tc;
-	public static final int width = 43, length = 43; 
+public class Home extends Object{
+	private static final int width = 43, length = 43;
 	private boolean live = true;
-
-	private static Toolkit tk = Toolkit.getDefaultToolkit(); 
+	private static Home homeObject;
 	private static Image[] homeImags = null;
 	static {
-		homeImags = new Image[] { tk.getImage(commonWall.class
+		homeImags = new Image[] { tk.getImage(CommonWall.class
 				.getResource("Images/home.jpg")), };
 	}
 
-	public home(int x, int y, main tc) {
-		this.x = x;
-		this.y = y;
-		this.tc = tc; 
-	}
+
 
 	public void gameOver(Graphics g) {
 
-		tc.tanks.clear();
-		tc.metalWall.clear();
-		tc.otherWall.clear();
-		tc.tankBooms.clear();
-		tc.bullets.clear();
-		tc.myTank.setLive(false);
-		Color c = g.getColor(); 
+		main.Tanks.clear();
+		main.metalWall.clear();
+		main.otherWall.clear();
+		main.tankBooms.clear();
+		main.bullets.clear();
+		main.myTank.setLive(false);
+		Color c = g.getColor();
 		g.setColor(Color.green);
 		Font f = g.getFont();
 		g.setFont(new Font(" ", Font.PLAIN, 40));
@@ -46,14 +39,27 @@ public class home {
 		if (live) { 
 			g.drawImage(homeImags[0], x, y, null);
 
-			for (int i = 0; i < tc.homeWall.size(); i++) {
-				commonWall w = tc.homeWall.get(i);
+			for (int i = 0; i < main.homeWall.size(); i++) {
+				CommonWall w = main.homeWall.get(i);
 				w.draw(g);
 			}
 		} else {
 			gameOver(g); 
 
 		}
+	}
+
+	private Home(Main main) {
+	this.main = main;
+	x=373;
+	y=557;
+	}
+	public static Home getInstance(Main tc) {
+
+		if (homeObject == null) {
+			homeObject = new Home(tc);
+		}
+		return homeObject;
 	}
 
 	public boolean isLive() { 
